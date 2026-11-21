@@ -5,7 +5,7 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import { Server, Container, Boxes, Zap, Database, MemoryStick, Archive, HardDrive, Package, Split, Router, Globe, Inbox, ScrollText, Users, Trash2, Coffee, House, FileCode, X } from 'lucide-react'
-import { CLOUDS, KINDS, UNITS, newData, nodeCosts, edgeCost, edgeRate, hourlyPrice, sizeOf, sizesOf, totals } from './cost.js'
+import { CLOUDS, KINDS, UNITS, unitLabel, newData, nodeCosts, edgeCost, edgeRate, hourlyPrice, sizeOf, sizesOf, totals } from './cost.js'
 import { importTerraform, isTerraformFile, EXAMPLE_TF } from './terraform.js'
 
 // Shown once per browser on phone-sized screens; storage can throw (private mode), then it just shows again.
@@ -74,7 +74,7 @@ function describe(cloud, d) {
   if (!k.model) return 'Traffic source'
   const size = () => d.kind === 'container' ? `${d.vcpu + d.sidecarVcpu} vCPU / ${d.memGiB + d.sidecarMemGiB} GiB` : sizeOf(cloud, d)[0]
   const what = k.model === 'hourly' ? `${d.qty}× ${size()}` : `${d.amount} ${k.amountUnit}`
-  return `${what} · ${d.duration} ${d.unit}`
+  return `${what} · ${d.duration} ${unitLabel(d.duration, d.unit)}`
 }
 
 function ServiceNode({ id, data }) {
@@ -175,7 +175,7 @@ function NodeConfig({ cloud, data: d, cost, patch, remove }) {
         <span className="row">
           <input {...numInput(d.duration, duration => patch({ duration }))} />
           <select value={d.unit} onChange={e => patch({ unit: e.target.value })}>
-            {Object.keys(UNITS).map(u => <option key={u}>{u}</option>)}
+            {Object.keys(UNITS).map(u => <option key={u} value={u}>{unitLabel(d.duration, u)}</option>)}
           </select>
         </span>
       </label>}
@@ -353,6 +353,11 @@ function Editor() {
     setEdges(es => es.filter(e => e.source !== id && e.target !== id))
   }
 
+  const replace = (next, nextEdges) => {
+    if (nodes.length && !confirm('This will replace the current diagram. Continue?')) return
+    setNodes(next); setEdges(nextEdges); setImported(null)
+  }
+
   const onImport = ({ cloud, nodes, edges, report }) => {
     setCloud(cloud)
     setNodes(nodes)
@@ -386,17 +391,17 @@ function Editor() {
           <span className="muted">{CLOUDS[cloud].region}</span>
           <span className="spacer" />
           <a className="link" href="#about">About</a>
-          <button className="primary with-icon" onClick={() => setImporting(true)}><FileCode size={14} aria-hidden /> Import Terraform</button>
-          <button onClick={() => { setNodes(SAMPLE.nodes); setEdges(SAMPLE.edges); setImported(null) }}>Load sample</button>
-          <button onClick={() => { setNodes([]); setEdges([]); setImported(null) }}>Clear</button>
+          <button className="primary with-icon" onClick={() => setImporting(true)}><FileCode size={14} aria-hidden /> Import</button>
+          <button onClick={() => replace(SAMPLE.nodes, SAMPLE.edges)}>Sample</button>
+          <button onClick={() => replace([], [])}>Clear</button>
           <a className="link icon" href="https://nandan.dev/" target="_blank" rel="noopener noreferrer" aria-label="nandan.dev" title="nandan.dev">
             <House size={16} aria-hidden />
           </a>
           <a className="link icon" href="https://github.com/sirius93/cloud-cost-estimator" target="_blank" rel="noopener noreferrer" aria-label="GitHub repository" title="GitHub repository">
             <GitHubMark />
           </a>
-          <a className="link coffee" href="https://buymeacoffee.com/siri" target="_blank" rel="noopener noreferrer">
-            <Coffee size={16} aria-hidden /> Buy me a coffee
+          <a className="link coffee" href="https://buymeacoffee.com/siri" target="_blank" rel="noopener noreferrer" aria-label="Buy me a coffee" title="Buy me a coffee">
+            <Coffee size={16} aria-hidden /> <span className="coffee-text">Buy me a coffee</span>
           </a>
         </header>
         <Palette cloud={cloud} onAdd={addAtCenter} />

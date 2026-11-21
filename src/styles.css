@@ -33,7 +33,7 @@ label.check input { width: auto; }
   grid-template: auto 1fr / 230px 1fr 290px;
   grid-template-areas: "head head head" "pal canvas side";
 }
-header { grid-area: head; display: flex; align-items: center; gap: 12px; padding: 8px 16px; border-bottom: 1px solid var(--line); background: var(--panel); flex-wrap: wrap; }
+header { grid-area: head; display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--panel); flex-wrap: wrap; }
 .brand { font-size: 16px; font-weight: 700; }
 .spacer { flex: 1; }
 .link { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 6px; color: inherit; text-decoration: none; }
@@ -104,7 +104,15 @@ button.primary:disabled { opacity: .5; cursor: not-allowed; }
 .report summary { cursor: pointer; margin-bottom: 6px; }
 .report .close { position: absolute; top: 8px; right: 8px; padding: 2px 4px; display: inline-flex; }
 
+@media (max-width: 1080px) {
+  .coffee-text { display: none; }
+  .link.coffee { padding: 6px; }
+}
 @media (max-width: 800px) {
+  /* ~28px touch target per handle; the visible dot stays 12px. Extra padding keeps text clear of the target. */
+  .node { padding: 8px 14px; }
+  .node .react-flow__handle:not(.drop-zone) { width: 28px; height: 28px; background: transparent; border: 0; }
+  .node .react-flow__handle:not(.drop-zone)::after { content: ''; position: absolute; inset: 8px; border-radius: 50%; background: var(--c); border: 2px solid var(--panel); pointer-events: none; }
   .app { height: auto; grid-template: auto auto 70vh auto / 1fr; grid-template-areas: "head" "pal" "canvas" "side"; }
   .palette { display: flex; gap: 12px; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--line); }
   .palette section { min-width: 180px; }

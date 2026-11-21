@@ -2,6 +2,8 @@
 
 export const HOURS_PER_MONTH = 730 // the convention all three clouds use
 export const UNITS = { hours: 1, days: 24, months: HOURS_PER_MONTH }
+// Display only: "1 hour", but "0 hours" / "1.5 hours". Stored unit keys stay plural.
+export const unitLabel = (n, unit) => n === 1 ? unit.slice(0, -1) : unit
 
 // Generic kinds map onto every cloud, so one diagram can be priced on any of them.
 // model: 'hourly' = price/h × qty × hours; 'usage' = monthly usage charge × months; null = free.

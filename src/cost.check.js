@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { nodeCost, nodeCosts, edgeCost, totals } from './cost.js'
+import { unitLabel, nodeCost, nodeCosts, edgeCost, totals } from './cost.js'
 
 const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-9, `${a} != ${b}`)
 const vm = { kind: 'compute', size: 0, qty: 1, duration: 1, unit: 'months' }
@@ -69,3 +69,8 @@ near(lbTotal('aws', rule('a'), rule('b')), 2 * 0.0225 * 730)                    
 near(lbTotal('azure', rule('a'), rule('b', { size: 1 })), 2 * 0.025 * 730)           // regional size clamps elsewhere
 
 console.log('cost checks passed')
+
+assert.equal(unitLabel(1, 'hours'), 'hour')
+assert.equal(unitLabel(1, 'months'), 'month')
+assert.equal(unitLabel(0, 'days'), 'days')
+assert.equal(unitLabel(1.5, 'days'), 'days')
