@@ -8,6 +8,23 @@ import { Server, Container, Boxes, Zap, Database, MemoryStick, Archive, HardDriv
 import { CLOUDS, KINDS, UNITS, newData, nodeCosts, edgeCost, edgeRate, hourlyPrice, sizeOf, sizesOf, totals } from './cost.js'
 import { importTerraform, isTerraformFile, EXAMPLE_TF } from './terraform.js'
 
+// Shown once per browser on phone-sized screens; storage can throw (private mode), then it just shows again.
+function SmallScreenNotice() {
+  const ref = useRef(null)
+  useEffect(() => {
+    if (!matchMedia('(max-width: 800px)').matches) return
+    try { if (localStorage.getItem('smallScreenNoticeSeen')) return; localStorage.setItem('smallScreenNoticeSeen', '1') } catch {}
+    ref.current.showModal()
+  }, [])
+  return (
+    <dialog ref={ref} className="tf-dialog">
+      <h2>Best on a bigger screen</h2>
+      <p>The diagram editor works on phones, but it's easier to use on a tablet or desktop.</p>
+      <form method="dialog"><button>Got it</button></form>
+    </dialog>
+  )
+}
+
 const ICONS = {
   compute: Server, container: Container, k8s: Boxes, serverless: Zap, database: Database, cache: MemoryStick,
   object: Archive, block: HardDrive, registry: Package, lb: Split, nat: Router, cdn: Globe, internet: Users,
@@ -357,6 +374,7 @@ function Editor() {
   return (
     <CloudCtx.Provider value={cloud}>
     <CostsCtx.Provider value={costs}>
+      <SmallScreenNotice />
       <div className="app">
         <header>
           <span className="brand">Cloud Cost Estimator</span>
